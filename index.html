@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#4F46E5">
+  <title>Mileage Plus</title>
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { 
+      margin:0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+      background:#0B0F13; 
+      color:#E5E7EB;
+      overflow-x: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .wrap { 
+      max-width:900px; 
+      margin:0 auto; 
+      padding:16px;
+      padding-top: 160px;
+    }
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #0B0F13;
+      z-index: 100;
+      padding: 12px 16px 8px 16px;
+      max-width: 900px;
+      margin: 0 auto;
+      border-bottom: 1px solid #1F2937;
+    }
+    .title { 
+      font-size:26px; 
+      font-weight:800;
+      margin-bottom: 4px;
+    }
+    .subtitle { 
+      font-size:13px; 
+      color:#9CA3AF; 
+      margin-bottom:16px;
+    }
+    .tabs { 
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:8px; 
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: #0B0F13;
+      padding: 8px 12px 12px 12px;
+      border-bottom: 1px solid #1F2937;
+      z-index: 99;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .tabs button { 
+      padding:12px 8px; 
+      border:0; 
+      border-radius:8px; 
+      background:#131A21; 
+      color:#9CA3AF; 
+      font-weight:600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tabs button.active { 
+      background:#4F46E5; 
+      color:white;
+      transform: translateY(-2px);
+    }
+    .tabs button:active {
+      transform: translateY(0);
+    }
+    .card { 
+      background:#131A21; 
+      padding:16px; 
+      border-radius:12px; 
+      margin-bottom:16px; 
+      position:relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .label { 
+      display:inline-block; 
+      font-size:13px; 
+      margin-bottom:8px; 
+      color:#E5E7EB; 
+      padding:6px 12px; 
+      border-radius:20px; 
+      background:#1E293B; 
+      font-weight:700;
+    }
+    input, select { 
+      width:100%; 
+      max-width:100%; 
+      box-sizing:border-box; 
+      padding:14px; 
+      border-radius:8px; 
+      border:1px solid #1F2937; 
+      background:#0F1620; 
+      color:white; 
+      margin-bottom:12px; 
+      display:block;
+      font-size: 16px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #4F46E5;
+    }
+    .btn { 
+      padding:14px; 
+      border:0; 
+      border-radius:10px; 
+      font-weight:700; 
+      cursor:pointer;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn.primary { 
+      background:#4F46E5; 
+      color:white; 
+      width:100%;
+    }
+    .btn.secondary { 
+      background:transparent; 
+      border:2px solid #4F46E5; 
+      color:#E5E7EB; 
+      width:100%;
+      margin-top: 8px;
+    }
+    .total { 
+      font-size:42px; 
+      font-weight:900; 
+      text-align:center; 
+      margin:20px 0;
+    }
+    .total.boldsmall { 
+      font-size:18px; 
+      font-weight:700; 
+      text-align:center; 
+      margin:12px 0;
+    }
+    .item { 
+      display:flex; 
+      justify-content:space-between; 
+      align-items: center;
+      margin:8px 0; 
+      background:#0E141C; 
+      padding:14px; 
+      border-radius:8px; 
+      flex-wrap:wrap;
+    }
+    .item-text {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .danger { 
+      color:#EF4444; 
+      cursor:pointer;
+      font-weight: 600;
+      padding: 6px 12px;
+      background: rgba(239, 68, 68, 0.1);
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .row { 
+      display:flex; 
+      gap:12px; 
+      flex-wrap:wrap;
+      margin-bottom: 16px;
+    }
+    .square { 
+      flex:1; 
+      background:#131A21; 
+      border-radius:12px; 
+      padding:20px; 
+      text-align:center; 
+      box-shadow:0 2px 8px rgba(0,0,0,0.3);
+      min-width: 0;
+    }
+    .oil-green { color:#10B981; }
+    .oil-yellow { color:#FBBF24; }
+    .oil-orange { color:#FB923C; }
+    .oil-red { color:#EF4444; }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6B7280;
+    }
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+    
+    @media (max-width: 600px) {
+      .row { flex-direction: column; }
+      .square { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div class="title">⛽ Mileage Plus</div>
+      <div class="subtitle">Track petrol usage & range smartly</div>
+    </div>
+    <div id="content">Loading...</div>
+  </div>
+  
+  <div class="tabs">
+    <button id="tab-home" class="active">🏠 Home</button>
+    <button id="tab-add">⛽ Refill</button>
+    <button id="tab-stats">📊 Stats</button>
+    <button id="tab-settings">⚙️ Settings</button>
+  </div>
+
+  <script>
+    // Global app state
+    var appState = {
+      tab: 'home',
+      settings: {price:'',kmpl:'',oilInterval:'10000',startOdo:'',estimatedRange:''},
+      entries: [],
+      amount: '',
+      refillDate: '',
+      refillOdo: '',
+      statsView: 'summary' // summary, chart, graph, bar
+    };
+
+    const KEYS = {settings:'mileage_plus_settings', entries:'mileage_plus_entries'};
+
+    function loadData() {
+      try {
+        const savedSettings = localStorage.getItem(KEYS.settings);
+        if(savedSettings) appState.settings = JSON.parse(savedSettings);
+        
+        const savedEntries = localStorage.getItem(KEYS.entries);
+        if(savedEntries) appState.entries = JSON.parse(savedEntries);
+      } catch(e) {
+        console.log('Load error:', e);
+      }
+    }
+
+    function saveData(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch(e) {
+        alert('Storage error');
+      }
+    }
+
+    function fmt(n, d) {
+      d = d || 1;
+      if(!isFinite(n) || !n) return '0';
+      const fixed = Number(n).toFixed(d);
+      const parts = fixed.split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return parts.join('.');
+    }
+
+    function computeKm(a, p, k) {
+      a = Number(a);
+      p = Number(p);
+      k = Number(k);
+      if(!a || !p || !k) return 0;
+      return (a/p) * k;
+    }
+
+    function sumKm(entries) {
+      return entries.reduce(function(sum, entry) {
+        return sum + (entry.km || 0);
+      }, 0);
+    }
+
+    function oilStatus() {
+      const total = sumKm(appState.entries);
+      const interval = Number(appState.settings.oilInterval) || 10000;
+      const remaining = interval - (total % interval);
+      let colorClass = 'oil-green';
+      if(remaining <= 1000) colorClass = 'oil-red';
+      else if(remaining <= 3000) colorClass = 'oil-orange';
+      else if(remaining <= 6000) colorClass = 'oil-yellow';
+      return {remaining: remaining, colorClass: colorClass, total: total, interval: interval};
+    }
+
+    function renderHome() {
+      const oil = oilStatus();
+      let oilDisplay = '';
+      if(oil.remaining > 0 && oil.remaining < oil.interval) {
+        oilDisplay = '<div class="total boldsmall ' + oil.colorClass + '">🔧 Change in ' + fmt(oil.remaining) + ' km</div>';
+      } else if(oil.remaining >= oil.interval) {
+        oilDisplay = '<div class="total boldsmall oil-green">✅ ' + fmt(oil.remaining) + ' km till next change</div>';
+      } else {
+        oilDisplay = '<div class="total boldsmall oil-red">⚠️ Engine oil change due now!</div>';
+      }
+
+      let entriesHtml = '';
+      if(appState.entries.length > 0) {
+        entriesHtml = appState.entries.map(function(it) {
+          return '<div class="item"><div class="item-text"><strong>🏍️ ' + fmt(it.km) + ' km</strong> <span style="color:#10B981;">(₹' + fmt(it.amount) + ')</span><br><small style="color:#9CA3AF;">📅 ' + (it.date||'N/A') + (it.odo ? ' • 🔢 Odo: ' + fmt(it.odo,0) + ' km' : '') + '</small></div><span class="danger" onclick="window.deleteEntry(' + it.id + ')">🗑️ Delete</span></div>';
+        }).join('');
+      } else {
+        entriesHtml = '<div class="empty-state"><div class="empty-state-icon">⛽</div><div style="font-size:16px;font-weight:600;margin-bottom:8px;">No refills yet</div><div style="font-size:13px;color:#9CA3AF;">Add your first refill to start tracking!</div></div>';
+      }
+
+      const totalDistance = sumKm(appState.entries);
+      const estimatedCurrentOdo = appState.settings.startOdo ? Number(appState.settings.startOdo) + totalDistance : 0;
+      const estimatedRangeRemaining = appState.settings.estimatedRange ? Number(appState.settings.estimatedRange) - totalDistance : 0;
+
+      let odometerSection = '';
+      if(appState.settings.startOdo || appState.settings.estimatedRange) {
+        odometerSection = '<div class="row">';
+        if(appState.settings.startOdo) {
+          odometerSection += '<div class="square"><span class="label">🔢 Current Odometer</span><div class="total boldsmall">' + fmt(estimatedCurrentOdo,0) + ' km</div><div style="font-size:12px;color:#9CA3AF;margin-top:8px;">Started at ' + fmt(appState.settings.startOdo,0) + ' km</div></div>';
+        }
+        if(appState.settings.estimatedRange) {
+          const rangePercent = totalDistance > 0 && appState.settings.estimatedRange > 0 ? Math.round((totalDistance / Number(appState.settings.estimatedRange)) * 100) : 0;
+          odometerSection += '<div class="square"><span class="label">⛽ Fuel Range Status</span><div class="total boldsmall">' + fmt(totalDistance,0) + ' km</div><div style="font-size:12px;color:' + (estimatedRangeRemaining>0?'#10B981':'#EF4444') + ';margin-top:8px;">' + (estimatedRangeRemaining>0 ? '🎯 '+fmt(estimatedRangeRemaining,0)+' km remaining ('+rangePercent+'% used)' : '⚠️ Refill needed!') + '</div></div>';
+        }
+        odometerSection += '</div>';
+      }
+
+      return '<div class="row"><div class="square"><span class="label">🏍️ Total Range</span><div class="total">' + fmt(sumKm(appState.entries)) + ' km</div>' + (appState.entries.length ? '<button class="btn secondary" onclick="window.resetEntries()">🔄 Reset All</button>' : '') + '</div></div>' + odometerSection + '<div class="row"><div class="square"><span class="label">🛢️ Engine Oil Alert</span>' + oilDisplay + '<div style="font-size:12px;color:#9CA3AF;margin-top:12px;">Every ' + fmt(oil.interval,0) + ' km interval</div></div></div><div class="card"><div class="label">📋 Recent Refills</div>' + entriesHtml + '</div>';
+    }
+
+    function renderRefill() {
+      const km = computeKm(appState.amount, appState.settings.price, appState.settings.kmpl);
+      const today = new Date().toISOString().split('T')[0];
+      
+      return '<div class="card"><label class="label">💰 Amount Paid (₹)</label><input type="number" id="amount-input" inputmode="decimal" placeholder="Enter amount paid" value="' + appState.amount + '" oninput="updateAmount(this.value)"><label class="label">📅 Refill Date</label><input type="date" id="date-input" value="' + (appState.refillDate||today) + '" onchange="updateDate(this.value)"><label class="label">🔢 Odometer Reading (km) - Optional</label><input type="number" id="odo-input" inputmode="numeric" placeholder="Current odometer reading" value="' + appState.refillOdo + '" oninput="updateOdo(this.value)"><div class="label">📏 Calculated Range</div><div class="total" style="color:#10B981">' + fmt(km,1) + ' km</div><div style="text-align:center;color:#9CA3AF;font-size:13px;margin-top:-10px;">' + (appState.settings.price && appState.settings.kmpl ? 'Based on ₹'+appState.settings.price+'/L @ '+appState.settings.kmpl+' km/L' : 'Set price & mileage in Settings') + '</div><button class="btn primary" onclick="window.addEntry()">✅ Add to Total</button></div><div class="card"><div class="label">💡 Quick Tips</div><div style="color:#9CA3AF;font-size:14px;line-height:1.8;">• Make sure your petrol price and bike mileage are set correctly in Settings<br>• Add odometer reading to track total distance traveled<br>• Engine oil change reminder works automatically every ' + (appState.settings.oilInterval||'10,000') + ' km<br>• Date defaults to today but you can change it for past refills</div></div>';
+    }
+
+    function renderStats() {
+      const totalSpent = appState.entries.reduce(function(s,e){return s+e.amount;}, 0);
+      const avgKm = appState.entries.length ? sumKm(appState.entries)/appState.entries.length : 0;
+      const avgAmount = appState.entries.length ? totalSpent/appState.entries.length : 0;
+      const totalKm = sumKm(appState.entries);
+      const actualMileage = totalSpent>0 ? (totalKm/(totalSpent/appState.settings.price)) : 0;
+      
+      let daysSinceStart = 0;
+      let perDaySpending = 0;
+      let perMonthSpending = 0;
+      let trackingInfo = '';
+      
+      if(appState.entries.length > 0) {
+        const dates = appState.entries.map(function(e){return new Date(e.date);}).filter(function(d){return !isNaN(d);});
+        if(dates.length > 0) {
+          const oldestDate = new Date(Math.min.apply(null, dates));
+          const newestDate = new Date(Math.max.apply(null, dates));
+          daysSinceStart = Math.ceil((newestDate - oldestDate) / (1000 * 60 * 60 * 24)) + 1;
+          
+          if(daysSinceStart > 0) {
+            perDaySpending = totalSpent / daysSinceStart;
+            perMonthSpending = perDaySpending * 30;
+            trackingInfo = 'Tracking since ' + daysSinceStart + ' day' + (daysSinceStart>1?'s':'');
+          }
+        }
+      }
+      
+      // View toggle buttons
+      const viewButtons = '<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;"><button class="btn ' + (appState.statsView==='summary'?'primary':'secondary') + '" style="flex:1;padding:10px;font-size:13px;" onclick="window.changeStatsView(\'summary\')">📊 Summary</button><button class="btn ' + (appState.statsView==='chart'?'primary':'secondary') + '" style="flex:1;padding:10px;font-size:13px;" onclick="window.changeStatsView(\'chart\')">📈 Chart</button><button class="btn ' + (appState.statsView==='bar'?'primary':'secondary') + '" style="flex:1;padding:10px;font-size:13px;" onclick="window.changeStatsView(\'bar\')">📊 Bars</button></div>';
+      
+      let contentHTML = '';
+      
+      if(appState.statsView === 'summary') {
+        let dayMonthSection = '';
+        if(daysSinceStart > 0) {
+          dayMonthSection = '<div class="row"><div class="square" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white;"><span class="label" style="background: rgba(255,255,255,0.2); color: white;">📅 Per Day</span><div class="total boldsmall" style="color: white;">₹' + fmt(perDaySpending,1) + '</div><div style="font-size:12px;opacity:0.9;">Average daily spending</div></div><div class="square" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: white;"><span class="label" style="background: rgba(255,255,255,0.2); color: white;">📆 Per Month</span><div class="total boldsmall" style="color: white;">₹' + fmt(perMonthSpending,0) + '</div><div style="font-size:12px;opacity:0.9;">Average monthly spending</div></div></div>';
+        }
+        
+        contentHTML = '<div class="card" style="background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%); color: white;"><div class="label" style="background: rgba(255,255,255,0.2); color: white;">💸 Total Spending</div><div class="total" style="color: white;">₹' + fmt(totalSpent,0) + '</div>' + (trackingInfo ? '<div style="font-size:13px;opacity:0.9;text-align:center;">'+trackingInfo+'</div>' : '') + '</div>' + dayMonthSection + '<div class="row"><div class="square"><span class="label">📊 Avg Range/Refill</span><div class="total boldsmall">' + fmt(avgKm,1) + ' km</div></div><div class="square"><span class="label">💰 Avg Amount/Refill</span><div class="total boldsmall">₹' + fmt(avgAmount,0) + '</div></div></div><div class="row"><div class="square"><span class="label">🏍️ Total Distance</span><div class="total boldsmall">' + fmt(totalKm,1) + ' km</div></div><div class="square"><span class="label">⛽ Actual Mileage</span><div class="total boldsmall">' + fmt(actualMileage,1) + ' km/L</div></div></div><div class="card"><div class="label">📈 Detailed Summary</div><div style="color:#E5E7EB;font-size:14px;line-height:2;margin-top:12px;"><strong>📋 Total Refills:</strong> ' + appState.entries.length + '<br><strong>⛽ Total Fuel:</strong> ' + (appState.settings.price>0 ? fmt(totalSpent/appState.settings.price,1)+' L' : 'N/A') + '<br>' + (daysSinceStart>0 ? '<strong>📅 Tracking Period:</strong> '+daysSinceStart+' day'+(daysSinceStart>1?'s':'')+'<br><strong>🏍️ Avg Distance/Day:</strong> '+fmt(totalKm/daysSinceStart,1)+' km<br>' : '') + '<strong>📊 Expected vs Actual:</strong> ' + appState.settings.kmpl + ' km/L vs ' + fmt(actualMileage,1) + ' km/L<br></div><div style="color:#9CA3AF;font-size:13px;margin-top:16px;padding-top:16px;border-top:1px solid #1F2937;">💡 <strong>Money Saving Tip:</strong> ' + (actualMileage > appState.settings.kmpl ? 'Great! You\'re getting better mileage than expected! 🎉' : 'Try maintaining steady speed and regular servicing to improve mileage.') + '</div></div>';
+      }
+      else if(appState.statsView === 'chart') {
+        // Line chart view
+        if(appState.entries.length === 0) {
+          contentHTML = '<div class="card"><div class="empty-state"><div class="empty-state-icon">📈</div><div>No data to display</div><div style="font-size:13px;margin-top:8px;">Add some refills to see the chart</div></div></div>';
+        } else {
+          const sortedEntries = appState.entries.slice().reverse(); // oldest to newest
+          const maxAmount = Math.max.apply(null, sortedEntries.map(function(e){return e.amount;}));
+          const maxKm = Math.max.apply(null, sortedEntries.map(function(e){return e.km;}));
+          
+          let chartHTML = '<div class="card"><div class="label">📈 Spending Over Time</div><div style="margin-top:20px;padding:20px 10px;background:#0E141C;border-radius:8px;position:relative;height:300px;">';
+          
+          // Y-axis labels
+          chartHTML += '<div style="position:absolute;left:0;top:0;bottom:0;width:50px;display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#9CA3AF;padding:10px 0;">';
+          for(var i = 5; i >= 0; i--) {
+            chartHTML += '<div style="text-align:right;padding-right:8px;">₹' + fmt(maxAmount * i / 5, 0) + '</div>';
+          }
+          chartHTML += '</div>';
+          
+          // Chart area
+          chartHTML += '<div style="margin-left:50px;height:100%;position:relative;border-left:2px solid #1F2937;border-bottom:2px solid #1F2937;">';
+          
+          // Plot points and lines
+          var points = [];
+          sortedEntries.forEach(function(entry, idx) {
+            const x = (idx / (sortedEntries.length - 1)) * 100;
+            const y = 100 - ((entry.amount / maxAmount) * 100);
+            points.push({x: x, y: y, entry: entry});
+          });
+          
+          // Draw line
+          if(points.length > 1) {
+            var pathD = 'M ';
+            points.forEach(function(p, i) {
+              pathD += p.x + '% ' + p.y + '%';
+              if(i < points.length - 1) pathD += ' L ';
+            });
+            chartHTML += '<svg style="position:absolute;top:0;left:0;width:100%;height:100%;"><path d="' + pathD + '" stroke="#4F46E5" stroke-width="3" fill="none"/></svg>';
+          }
+          
+          // Draw points
+          points.forEach(function(p) {
+            chartHTML += '<div style="position:absolute;left:' + p.x + '%;top:' + p.y + '%;width:12px;height:12px;background:#10B981;border:3px solid #0B0F13;border-radius:50%;transform:translate(-50%,-50%);"></div>';
+          });
+          
+          chartHTML += '</div>';
+          
+          // X-axis labels (dates)
+          chartHTML += '<div style="margin-left:50px;margin-top:10px;display:flex;justify-content:space-between;font-size:10px;color:#9CA3AF;">';
+          if(sortedEntries.length > 0) {
+            chartHTML += '<div>' + sortedEntries[0].date.substring(5) + '</div>';
+            if(sortedEntries.length > 1) {
+              chartHTML += '<div>' + sortedEntries[sortedEntries.length-1].date.substring(5) + '</div>';
+            }
+          }
+          chartHTML += '</div>';
+          
+          chartHTML += '</div></div>';
+          
+          // Recent refills list
+          chartHTML += '<div class="card"><div class="label">📋 Refill History</div>';
+          sortedEntries.slice().reverse().forEach(function(entry) {
+            chartHTML += '<div style="padding:10px;margin:8px 0;background:#0E141C;border-radius:6px;border-left:4px solid #4F46E5;"><div style="display:flex;justify-content:space-between;align-items:center;"><div><strong style="color:#10B981;">₹' + fmt(entry.amount) + '</strong> • ' + fmt(entry.km) + ' km</div><div style="font-size:12px;color:#9CA3AF;">' + entry.date + '</div></div></div>';
+          });
+          chartHTML += '</div>';
+          
+          contentHTML = chartHTML;
+        }
+      }
+      else if(appState.statsView === 'bar') {
+        // Bar chart view
+        if(appState.entries.length === 0) {
+          contentHTML = '<div class="card"><div class="empty-state"><div class="empty-state-icon">📊</div><div>No data to display</div><div style="font-size:13px;margin-top:8px;">Add some refills to see the bars</div></div></div>';
+        } else {
+          const maxAmount = Math.max.apply(null, appState.entries.map(function(e){return e.amount;}));
+          
+          let barsHTML = '<div class="card"><div class="label">📊 Spending Comparison</div><div style="margin-top:20px;">';
+          
+          appState.entries.forEach(function(entry, idx) {
+            const barHeight = (entry.amount / maxAmount) * 100;
+            const barColor = idx % 3 === 0 ? '#4F46E5' : idx % 3 === 1 ? '#10B981' : '#F59E0B';
+            
+            barsHTML += '<div style="margin-bottom:20px;"><div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;"><span style="color:#9CA3AF;">' + entry.date + '</span><span style="color:' + barColor + ';font-weight:700;">₹' + fmt(entry.amount) + '</span></div><div style="background:#0E141C;height:40px;border-radius:6px;overflow:hidden;position:relative;"><div style="background:' + barColor + ';height:100%;width:' + barHeight + '%;transition:width 0.3s;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:12px;font-weight:700;color:white;">' + fmt(entry.km) + ' km</div></div></div>';
+          });
+          
+          barsHTML += '</div></div>';
+          
+          // Stats summary
+          barsHTML += '<div class="row"><div class="square"><span class="label">💰 Highest</span><div class="total boldsmall">₹' + fmt(maxAmount,0) + '</div></div><div class="square"><span class="label">💰 Lowest</span><div class="total boldsmall">₹' + fmt(Math.min.apply(null, appState.entries.map(function(e){return e.amount;})),0) + '</div></div></div>';
+          
+          contentHTML = barsHTML;
+        }
+      }
+      
+      return viewButtons + contentHTML;
+    }
+
+    function renderSettings() {
+      const oil = oilStatus();
+      return '<div class="card"><div class="label">⚙️ Basic Settings</div><label class="label" style="display:block;margin-top:12px;">⛽ Petrol Price (₹/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 105.50" value="' + appState.settings.price + '" oninput="updatePrice(this.value)"><label class="label" style="display:block;">🏍️ Bike Mileage (km/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 45" value="' + appState.settings.kmpl + '" oninput="updateKmpl(this.value)"><label class="label" style="display:block;">🔧 Oil Change Interval (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 10000" value="' + appState.settings.oilInterval + '" oninput="updateOilInterval(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">⏰ Set when you want to be reminded for oil change</div></div><div class="card"><div class="label">🎯 Trip Tracking (Optional)</div><label class="label" style="display:block;margin-top:12px;">🔢 Starting Odometer (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 5234 - when you started using this app" value="' + appState.settings.startOdo + '" oninput="updateStartOdo(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">📍 Your bike\'s odometer reading when you started tracking</div><label class="label" style="display:block;">⛽ Estimated 1st Time Range (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 400 - full tank range estimate" value="' + appState.settings.estimatedRange + '" oninput="updateEstimatedRange(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">🎯 Expected range on a full tank (helps track fuel efficiency)</div><button class="btn primary" onclick="window.saveSettings()">💾 Save All Settings</button></div><div class="card"><div class="label">🔧 Oil Change Status</div><div style="color:#E5E7EB;font-size:14px;line-height:1.8;margin-top:8px;"><strong>📊 Current Interval:</strong> Every ' + fmt(oil.interval,0) + ' km<br><strong>🏍️ Distance Covered:</strong> ' + fmt(oil.total,0) + ' km<br><strong>⏳ Remaining:</strong> ' + fmt(oil.remaining,0) + ' km<br><strong>🚦 Status:</strong> ' + (oil.colorClass==='oil-green'?'✅ Good':oil.colorClass==='oil-yellow'?'⚠️ Due Soon':oil.colorClass==='oil-orange'?'🟠 Due Very Soon':'🔴 Overdue') + '</div></div><div class="card"><div class="label">ℹ️ About Mileage Plus</div><div style="color:#9CA3AF;font-size:13px;line-height:1.6;"><strong style="color:#E5E7EB;">Version:</strong> 1.2 (APK Ready)<br><strong style="color:#E5E7EB;">Features:</strong><br>• 🏍️ Track petrol refills & calculate range<br>• 🔢 Odometer & range tracking<br>• 🎯 Set distance goals & targets<br>• 🔧 Customizable oil change reminders<br>• 📊 Detailed spending statistics<br>• 💾 Offline data storage<br>• 📱 Full Android app support<br><br>💡 <strong>Pro Tip:</strong> All tracking fields are optional - use what you need!<br><br>Made with ❤️ for bike enthusiasts</div></div>';
+    }
+
+    function render() {
+      document.querySelectorAll('.tabs button').forEach(function(b){b.classList.remove('active');});
+      document.getElementById('tab-' + appState.tab).classList.add('active');
+      
+      const content = document.getElementById('content');
+      if(!content) return;
+      
+      if(appState.tab === 'home') content.innerHTML = renderHome();
+      else if(appState.tab === 'add') content.innerHTML = renderRefill();
+      else if(appState.tab === 'stats') content.innerHTML = renderStats();
+      else if(appState.tab === 'settings') content.innerHTML = renderSettings();
+    }
+
+    function updateAmount(val) { 
+      appState.amount = val; 
+      // Update only the calculated km display without full re-render
+      const calcDisplay = document.querySelector('.total[style*="color:#10B981"]');
+      if(calcDisplay) {
+        const km = computeKm(val, appState.settings.price, appState.settings.kmpl);
+        calcDisplay.textContent = fmt(km,1) + ' km';
+      }
+    }
+    function updateDate(val) { appState.refillDate = val; }
+    function updateOdo(val) { appState.refillOdo = val; }
+    function updatePrice(val) { appState.settings.price = val; }
+    function updateKmpl(val) { appState.settings.kmpl = val; }
+    function updateOilInterval(val) { appState.settings.oilInterval = val; }
+    function updateStartOdo(val) { appState.settings.startOdo = val; }
+    function updateEstimatedRange(val) { appState.settings.estimatedRange = val; }
+
+    function saveSettings() {
+      if(!appState.settings.price || !appState.settings.kmpl) {
+        alert('⚠️ Please enter petrol price and mileage!');
+        return;
+      }
+      if(!appState.settings.oilInterval || Number(appState.settings.oilInterval)<=0) {
+        alert('⚠️ Please enter a valid oil change interval!');
+        return;
+      }
+      saveData(KEYS.settings, appState.settings);
+      alert('✅ Settings saved successfully!');
+      render();
+    }
+
+    function addEntry() {
+      const km = computeKm(appState.amount, appState.settings.price, appState.settings.kmpl);
+      if(!km) {
+        alert('⚠️ Please enter valid amount and check your settings!');
+        return;
+      }
+      if(!appState.settings.price || !appState.settings.kmpl) {
+        alert('⚠️ Please set petrol price and mileage in Settings first!');
+        appState.tab = 'settings';
+        render();
+        return;
+      }
+      const today = new Date().toISOString().split('T')[0];
+      const entryDate = appState.refillDate || today;
+      appState.entries.unshift({
+        id: Date.now(),
+        amount: Number(appState.amount),
+        km: km,
+        date: entryDate,
+        odo: appState.refillOdo ? Number(appState.refillOdo) : null
+      });
+      saveData(KEYS.entries, appState.entries);
+      appState.amount = '';
+      appState.refillDate = '';
+      appState.refillOdo = '';
+      appState.tab = 'home';
+      alert('✅ Refill added successfully!');
+      render();
+    }
+
+    function deleteEntry(id) {
+      if(confirm('🗑️ Delete this refill entry?')) {
+        appState.entries = appState.entries.filter(function(e){return e.id !== id;});
+        saveData(KEYS.entries, appState.entries);
+        render();
+      }
+    }
+
+    function resetEntries() {
+      if(confirm('⚠️ Clear all refill entries? This cannot be undone!')) {
+        appState.entries = [];
+        saveData(KEYS.entries, []);
+        render();
+      }
+    }
+
+    // Make functions globally accessible
+    window.deleteEntry = deleteEntry;
+    window.resetEntries = resetEntries;
+    window.addEntry = addEntry;
+    window.saveSettings = saveSettings;
+    window.changeStatsView = function(view) {
+      appState.statsView = view;
+      render();
+    };
+
+    document.getElementById('tab-home').onclick = function() { appState.tab = 'home'; render(); };
+    document.getElementById('tab-add').onclick = function() { appState.tab = 'add'; render(); };
+    document.getElementById('tab-stats').onclick = function() { appState.tab = 'stats'; render(); };
+    document.getElementById('tab-settings').onclick = function() { appState.tab = 'settings'; render(); };
+
+    loadData();
+    render();
+  </script>
+</body>
+</html>
