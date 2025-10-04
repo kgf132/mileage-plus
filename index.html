@@ -23,7 +23,7 @@
       max-width:900px; 
       margin:0 auto; 
       padding:16px;
-      padding-top: 160px;
+      padding-top: 180px;
     }
     .header {
       position: fixed;
@@ -36,6 +36,29 @@
       max-width: 900px;
       margin: 0 auto;
       border-bottom: 1px solid #1F2937;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .header-left {
+      flex: 1;
+    }
+    .header-right {
+      padding-top: 8px;
+    }
+    .settings-icon {
+      background: #131A21;
+      color: #9CA3AF;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+    .settings-icon:hover {
+      background: #4F46E5;
+      color: white;
     }
     .title { 
       font-size:26px; 
@@ -49,7 +72,7 @@
     }
     .tabs { 
       display:grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap:8px; 
       position: fixed;
       top: 80px;
@@ -218,8 +241,13 @@
 <body>
   <div class="wrap">
     <div class="header">
-      <div class="title">⛽ Mileage Plus</div>
-      <div class="subtitle">Track petrol usage & range smartly</div>
+      <div class="header-left">
+        <div class="title">⛽ Mileage Plus</div>
+        <div class="subtitle">Track petrol usage & range smartly</div>
+      </div>
+      <div class="header-right">
+        <button class="settings-icon" id="settings-btn" onclick="window.openSettings()">⚙️</button>
+      </div>
     </div>
     <div id="content">Loading...</div>
   </div>
@@ -228,7 +256,6 @@
     <button id="tab-home" class="active">🏠 Home</button>
     <button id="tab-add">⛽ Refill</button>
     <button id="tab-stats">📊 Stats</button>
-    <button id="tab-settings">⚙️ Settings</button>
   </div>
 
   <script>
@@ -590,7 +617,11 @@
     document.getElementById('tab-home').onclick = function() { appState.tab = 'home'; render(); };
     document.getElementById('tab-add').onclick = function() { appState.tab = 'add'; render(); };
     document.getElementById('tab-stats').onclick = function() { appState.tab = 'stats'; render(); };
-    document.getElementById('tab-settings').onclick = function() { appState.tab = 'settings'; render(); };
+    
+    window.openSettings = function() {
+      appState.tab = 'settings';
+      render();
+    };
 
     loadData();
     render();
