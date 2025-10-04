@@ -263,7 +263,7 @@
     // Global app state
     var appState = {
       tab: 'home',
-      settings: {price:'',kmpl:'',oilInterval:'10000',startOdo:'',estimatedRange:'',topPadding:'16'},
+      settings: {price:'',kmpl:'',oilInterval:'10000',startOdo:'',estimatedRange:'',topPadding:'16',hideNavBars:'false'},
       entries: [],
       amount: '',
       refillDate: '',
@@ -512,7 +512,8 @@
 
     function renderSettings() {
       const oil = oilStatus();
-      return '<div class="card"><div class="label">⚙️ Basic Settings</div><label class="label" style="display:block;margin-top:12px;">⛽ Petrol Price (₹/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 105.50" value="' + appState.settings.price + '" oninput="updatePrice(this.value)"><label class="label" style="display:block;">🏍️ Bike Mileage (km/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 45" value="' + appState.settings.kmpl + '" oninput="updateKmpl(this.value)"><label class="label" style="display:block;">🔧 Oil Change Interval (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 10000" value="' + appState.settings.oilInterval + '" oninput="updateOilInterval(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">⏰ Set when you want to be reminded for oil change</div></div><div class="card"><div class="label">📱 Action Bar Adjustment</div><label class="label" style="display:block;margin-top:12px;">📏 Top Padding (px)</label><input type="number" inputmode="numeric" placeholder="e.g. 16" value="' + appState.settings.topPadding + '" oninput="updateTopPadding(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">💡 Adjust if action bar overlaps with title (default: 16px)</div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(0)">No Bar</button><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(16)">Default</button><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(32)">Large Bar</button></div></div><div class="card"><div class="label">🎯 Trip Tracking (Optional)</div><label class="label" style="display:block;margin-top:12px;">🔢 Starting Odometer (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 5234 - when you started using this app" value="' + appState.settings.startOdo + '" oninput="updateStartOdo(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">📍 Your bike\'s odometer reading when you started tracking</div><label class="label" style="display:block;">⛽ Estimated 1st Time Range (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 400 - full tank range estimate" value="' + appState.settings.estimatedRange + '" oninput="updateEstimatedRange(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">🎯 Expected range on a full tank (helps track fuel efficiency)</div><button class="btn primary" onclick="window.saveSettings()">💾 Save All Settings</button></div><div class="card"><div class="label">🔧 Oil Change Status</div><div style="color:#E5E7EB;font-size:14px;line-height:1.8;margin-top:8px;"><strong>📊 Current Interval:</strong> Every ' + fmt(oil.interval,0) + ' km<br><strong>🏍️ Distance Covered:</strong> ' + fmt(oil.total,0) + ' km<br><strong>⏳ Remaining:</strong> ' + fmt(oil.remaining,0) + ' km<br><strong>🚦 Status:</strong> ' + (oil.colorClass==='oil-green'?'✅ Good':oil.colorClass==='oil-yellow'?'⚠️ Due Soon':oil.colorClass==='oil-orange'?'🟠 Due Very Soon':'🔴 Overdue') + '</div></div><div class="card"><div class="label">ℹ️ About Mileage Plus</div><div style="color:#9CA3AF;font-size:13px;line-height:1.6;"><strong style="color:#E5E7EB;">Version:</strong> 1.2 (APK Ready)<br><strong style="color:#E5E7EB;">Features:</strong><br>• 🏍️ Track petrol refills & calculate range<br>• 🔢 Odometer & range tracking<br>• 🎯 Set distance goals & targets<br>• 🔧 Customizable oil change reminders<br>• 📊 Detailed spending statistics<br>• 💾 Offline data storage<br>• 📱 Full Android app support<br><br>💡 <strong>Pro Tip:</strong> All tracking fields are optional - use what you need!<br><br>Made with ❤️ for bike enthusiasts</div></div>';
+      const hideNavBars = appState.settings.hideNavBars === 'true';
+      return '<div class="card"><div class="label">⚙️ Basic Settings</div><label class="label" style="display:block;margin-top:12px;">⛽ Petrol Price (₹/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 105.50" value="' + appState.settings.price + '" oninput="updatePrice(this.value)"><label class="label" style="display:block;">🏍️ Bike Mileage (km/L)</label><input type="number" inputmode="decimal" placeholder="e.g. 45" value="' + appState.settings.kmpl + '" oninput="updateKmpl(this.value)"><label class="label" style="display:block;">🔧 Oil Change Interval (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 10000" value="' + appState.settings.oilInterval + '" oninput="updateOilInterval(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">⏰ Set when you want to be reminded for oil change</div></div><div class="card"><div class="label">📱 App Display Settings</div><label class="label" style="display:block;margin-top:12px;">🚫 Hide Navigation Bars</label><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;"><input type="checkbox" ' + (hideNavBars ? 'checked' : '') + ' onchange="window.toggleNavBars(this.checked)" style="width:auto;margin:0;"><span style="color:#E5E7EB;font-size:14px;">Hide app wrapper navigation</span></label></div><div style="font-size:12px;color:#9CA3AF;margin-bottom:16px;">💡 Enable this to remove default navigation bars</div><label class="label" style="display:block;">📏 Top Padding (px)</label><input type="number" inputmode="numeric" placeholder="e.g. 16" value="' + appState.settings.topPadding + '" oninput="updateTopPadding(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">💡 Adjust if action bar overlaps with title (default: 16px)</div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(0)">No Bar</button><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(16)">Default</button><button class="btn secondary" style="flex:1;font-size:13px;" onclick="window.applyTopPadding(32)">Large Bar</button></div></div><div class="card"><div class="label">🎯 Trip Tracking (Optional)</div><label class="label" style="display:block;margin-top:12px;">🔢 Starting Odometer (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 5234 - when you started using this app" value="' + appState.settings.startOdo + '" oninput="updateStartOdo(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">📍 Your bike\'s odometer reading when you started tracking</div><label class="label" style="display:block;">⛽ Estimated 1st Time Range (km)</label><input type="number" inputmode="numeric" placeholder="e.g. 400 - full tank range estimate" value="' + appState.settings.estimatedRange + '" oninput="updateEstimatedRange(this.value)"><div style="font-size:12px;color:#9CA3AF;margin-top:-8px;margin-bottom:12px;">🎯 Expected range on a full tank (helps track fuel efficiency)</div><button class="btn primary" onclick="window.saveSettings()">💾 Save All Settings</button></div><div class="card"><div class="label">🔧 Oil Change Status</div><div style="color:#E5E7EB;font-size:14px;line-height:1.8;margin-top:8px;"><strong>📊 Current Interval:</strong> Every ' + fmt(oil.interval,0) + ' km<br><strong>🏍️ Distance Covered:</strong> ' + fmt(oil.total,0) + ' km<br><strong>⏳ Remaining:</strong> ' + fmt(oil.remaining,0) + ' km<br><strong>🚦 Status:</strong> ' + (oil.colorClass==='oil-green'?'✅ Good':oil.colorClass==='oil-yellow'?'⚠️ Due Soon':oil.colorClass==='oil-orange'?'🟠 Due Very Soon':'🔴 Overdue') + '</div></div><div class="card"><div class="label">ℹ️ About Mileage Plus</div><div style="color:#9CA3AF;font-size:13px;line-height:1.6;"><strong style="color:#E5E7EB;">Version:</strong> 1.3 (APK Ready)<br><strong style="color:#E5E7EB;">Features:</strong><br>• 🏍️ Track petrol refills & calculate range<br>• 🔢 Odometer & range tracking<br>• 🎯 Set distance goals & targets<br>• 🔧 Customizable oil change reminders<br>• 📊 Detailed spending statistics<br>• 💾 Offline data storage<br>• 📱 Full Android app support<br><br>💡 <strong>Pro Tip:</strong> All tracking fields are optional - use what you need!<br><br>Made with ❤️ for bike enthusiasts</div></div>';
     }
 
     function render() {
@@ -574,6 +575,7 @@
       }
       saveData(KEYS.settings, appState.settings);
       applyPaddingStyle(appState.settings.topPadding);
+      applyNavBarHiding(appState.settings.hideNavBars === 'true');
       alert('✅ Settings saved successfully!');
       render();
     }
@@ -601,9 +603,56 @@
       }
     }
 
+    function applyNavBarHiding(hide) {
+      if(!document.getElementById('hide-nav-style')) {
+        const style = document.createElement('style');
+        style.id = 'hide-nav-style';
+        document.head.appendChild(style);
+      }
+      
+      const styleEl = document.getElementById('hide-nav-style');
+      if(hide) {
+        styleEl.textContent = `
+          /* Hide AppsGeyser top action bar */
+          header, .header-bar, .action-bar, .app-bar, .toolbar,
+          [class*="header"], [class*="toolbar"], [class*="actionbar"],
+          [id*="header"], [id*="toolbar"], [id*="actionbar"],
+          div[style*="position: fixed"][style*="top: 0"],
+          /* Hide AppsGeyser navigation bars */
+          [class*="bottom"], [class*="slider"], [class*="menu"], 
+          [id*="bottom"], [id*="slider"], [id*="menu"],
+          .ag-bottom-menu, .ag-slider, .ag-tabs, .ag-header, .ag-toolbar,
+          div[style*="position: fixed"][style*="bottom"],
+          div[style*="z-index: 999"], div[style*="z-index: 9999"] {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            max-height: 0 !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          /* Ensure our app elements are visible */
+          .wrap, .wrap .header, .tabs {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+          }
+        `;
+      } else {
+        styleEl.textContent = '';
+      }
+    }
+
     window.applyTopPadding = function(padding) {
       appState.settings.topPadding = padding.toString();
       applyPaddingStyle(padding);
+    };
+    
+    window.toggleNavBars = function(hide) {
+      appState.settings.hideNavBars = hide ? 'true' : 'false';
+      applyNavBarHiding(hide);
     };
 
     function addEntry() {
@@ -673,6 +722,7 @@
 
     loadData();
     applyPaddingStyle(appState.settings.topPadding);
+    applyNavBarHiding(appState.settings.hideNavBars === 'true');
     render();
   </script>
 </body>
